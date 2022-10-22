@@ -12,6 +12,8 @@ win = hamming(win_length);
 
 N=round(win_length/2)*2;%frame length
 overlap = N/2;
+DFT_points = 22050;
+freq_bin = Fs / DFT_points;%range of each frequency bin
 
 x=buffer(audio,N,overlap);%slice signal
 
@@ -20,12 +22,19 @@ x=buffer(audio,N,overlap);%slice signal
 x_w=repmat(hann(N),1,N_frames).*x;%window function
 
 notes = 440 * 2.^(((1:88)-49)./12); %key = round(49+12*log2(freq/440))
-upper_freq = 440 * 2.^((89-49)./12); %freq of the 89th key
+upper_freq = (440 * 2.^((89-49)./12) + 440 * 2.^((88-49)./12))/2; %freq of the 89th key
 
-[s,f,t] = spectrogram(audio,win_length,overlap,100,Fs,'yaxis');
-intensity = abs(s).^2;
+[s,f,t] = spectrogram(audio,win_length,overlap,DFT_points,Fs,'yaxis');
 
-filtered_intensity = (intensity > 20); %intensity .* (intensity > 20) to preserve the intensity
-filtered_freq = filtered_intensity.*f2;
+s_cropped = s(1:floor(upper_freq/freq_bin)+1,:);
+f_cropped = f(1:floor(upper_freq/freq_bin)+1);
+intensity = abs(s_cropped).^2;
 
-key = round(49+12*log2(filtered_freq./440))
+thres = 15;
+
+filtered_intensity = (intensity > thres); %intensity .* (intensity > 20) to preserve the intensity
+filtered_freq = filtered_intensity.*f_cropped;
+
+key = round(49+12*log2(filtered_freq./440));
+
+mesh(t,f_t,10*log(abs(s_t).^2))
