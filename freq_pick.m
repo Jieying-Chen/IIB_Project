@@ -19,7 +19,7 @@ overlap = 0;
 disp(['OVERLAP = ' num2str(overlap)]);
 
 %%%%%%
-DFT_points = 8000;
+DFT_points = 10000;
 %%%%%%
 
 disp(['frequency resolution = ' num2str(Fs/DFT_points)]);
@@ -28,14 +28,16 @@ freq_bin = Fs / DFT_points;%range of each frequency bin
 notes = 440 * 2.^(((1:88)-49)./12); %key = round(49+12*log2(freq/440))
 
 %%%%%%
-quarter = 1;
+quarter = 2;
 %%%%%%
 disp(['quarter = ' num2str(quarter)])
 if quarter == 1
     quarter_notes = 427 * 2.^(((1:88)-49)./12);
     notes = sort([notes quarter_notes]);
+elseif quarter == 2
+    eighth = [434 * 2.^(((44:88)-49)./12) 428 * 2.^(((44:88)-49)./12) 422 * 2.^(((44:88)-49)./12)] ;
+    notes = sort([notes eighth]);
 end
-
 lower_freq = (440 * 2.^((1-49)./12) + 440 * 2.^((0-49)./12))/2;
 upper_freq = (440 * 2.^((89-49)./12) + 440 * 2.^((88-49)./12))/2; %freq of the 89th key
 
@@ -52,7 +54,7 @@ thres = 20;
 filtered_intensity = (intensity > thres); %intensity .* (intensity > 20) to preserve the intensity
 filtered_freq = filtered_intensity.*f_cropped;
 
-if quarter == 1
+if quarter ~= 0
     key = zeros(1,numel(filtered_freq));
     for idx = 1:numel(filtered_freq)
         if filtered_freq(idx)~= 0
