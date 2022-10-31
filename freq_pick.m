@@ -1,9 +1,10 @@
 clear
 VoicePath = "C:\Users\96326\Desktop\IIBproject\VoiceSource\";
-%filename = "JLspeech1.mp3";
-filename = "TestNew.m4a";
+filename = "JLspeech1.mp3";
+%filename = "TestNew.m4a";
+%filename = "jw.m4a";
 [audio, Fs] = audioread(VoicePath+filename);
-
+audio = audio(:,1);
 
 duration = length(audio)/Fs;
 
@@ -19,7 +20,7 @@ overlap = 0;
 disp(['OVERLAP = ' num2str(overlap)]);
 
 %%%%%%
-DFT_points = 10000;
+DFT_points = 20000;
 %%%%%%
 
 disp(['frequency resolution = ' num2str(Fs/DFT_points)]);
@@ -48,7 +49,7 @@ f_cropped = f(ceil(lower_freq/freq_bin)+1:floor(upper_freq/freq_bin));
 intensity = abs(s_cropped).^2;
 
 %%%%%%
-thres = 20;
+thres = 10;
 %%%%%%
 
 filtered_intensity = (intensity > thres); %intensity .* (intensity > 20) to preserve the intensity
