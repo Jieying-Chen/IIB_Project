@@ -1,10 +1,13 @@
-clear
 VoicePath = "C:\Users\96326\Desktop\IIBproject\VoiceSource\";
-filename = "JLspeech1.mp3";
-%filename = "TestNew.m4a";
+%filename = "JLspeech1.mp3";
+%filename = "jc.m4a";
 %filename = "jw.m4a";
+filename = "31Jan_jh2.m4a";
 [audio, Fs] = audioread(VoicePath+filename);
 audio = audio(:,1);
+%audio = audio(190000:end);
+
+audio = noise_cancellation(audio,Fs);
 
 duration = length(audio)/Fs;
 
@@ -13,10 +16,11 @@ win_time = 50e-3;
 %%%%%%
 
 win_length = round(win_time*Fs); %sample per window
-win = hamming(win_length);
+%win = hamming(win_length);
+win = kaiser(win_length,5);
 
 N=round(win_length/2)*2;%frame length
-overlap = 0;
+overlap = N/2;
 disp(['OVERLAP = ' num2str(overlap)]);
 
 %%%%%%
@@ -24,12 +28,12 @@ DFT_points = 20000;
 %%%%%%
 
 disp(['frequency resolution = ' num2str(Fs/DFT_points)]);
-freq_bin = Fs / DFT_points;%range of each frequency bin
+freq_bin = Fs / DFT_points;%size of each frequency bin
 
 notes = 440 * 2.^(((1:88)-49)./12); %key = round(49+12*log2(freq/440))
 
 %%%%%%
-quarter = 2;
+quarter = 0;
 %%%%%%
 disp(['quarter = ' num2str(quarter)])
 if quarter == 1
@@ -49,7 +53,8 @@ f_cropped = f(ceil(lower_freq/freq_bin)+1:floor(upper_freq/freq_bin));
 intensity = abs(s_cropped).^2;
 
 %%%%%%
-thres = 10;
+%thres = 10;
+thres = 50;
 %%%%%%
 
 filtered_intensity = (intensity > thres); %intensity .* (intensity > 20) to preserve the intensity
@@ -77,7 +82,13 @@ key(key < 0)=0;
 
 %x=buffer(audio,N,overlap);%slice signal
 
-%[N_samps,N_frames]=size(x);
+%[N_samps,N_frames]=size(x);   
 
 %x_w=repmat(hann(N),1,N_frames).*x;%window function
 %win = hamming(win_length);
+save_key = input("save_key? ('1' = yes)");
+if save_key == 1
+    name = input("doc name?");
+    str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name + ".mat";
+    save(str,"key");
+end
