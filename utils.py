@@ -15,7 +15,7 @@ class Note:
         self.channel = channel
 
     def __repr__(self):
-        return f"pitch = {self.pitch}({self.start}, {self.end}), intensity sign = {self.intensity_sign}, intensity = {self.intensity:.3f}, channel = {self.channel}"
+        return f"pitch = {self.pitch}(time = {self.start}-{self.end}), intensity sign = {self.intensity_sign}, intensity = {self.intensity:.3f}, channel = {self.channel}"
 
     def sign(self):
         if self.intensity_sign == 'p':
