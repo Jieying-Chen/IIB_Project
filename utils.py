@@ -28,6 +28,7 @@ class Note:
             return 4
 
     
+
 #Separate notes into C major and Gb major
 def separate_majors(notes):
     C_major = [1,3,4,6,8,9,11]
@@ -36,21 +37,110 @@ def separate_majors(notes):
     C_notes = []
     Gb_notes = []
 
-    for i,note in enumerate(notes):
+    len_all = len(notes)
+
+    i = 0
+    while i < len(notes):
+        note = notes[i]
         seq = note.pitch % 12
         if (seq in C_major) and (seq not in Gb_major):
             C_notes.append(notes.pop(i))
+            i -= 1
         elif (seq in Gb_major) and (seq not in C_major):
             Gb_notes.append(notes.pop(i))
-    counter = len(notes)
-    while counter > 0:
-        if counter % 2 == 0:
+            i -= 1
+        i += 1
+
+
+    j = len(notes)
+    while j > 0:
+        #print(notes[0].pitch % 12)
+        if j % 2 == 0:
             C_notes.append(notes.pop(0))
         else:
             Gb_notes.append(notes.pop(0))
-        counter -= 1
-    return [C_notes, Gb_notes]
+        j -= 1
+    if len_all!= len(C_notes) + len(Gb_notes):
+        print('False')
+    return [C_notes, Gb_notes]  
 
+
+def get_intensity(cur_key,cur_freq,notes_list,j):
+    wave_freq = notes_list[cur_key-1]
+    if cur_key == 1:
+        sigma = notes_list[1]-notes_list[0]
+    else:
+        sigma = notes_list[cur_key-1]-notes_list[cur_key-2]
+    sigma = sigma/2
+    intensity = np.exp(-0.5 *((cur_freq-wave_freq)/sigma)**2)
+    #print('cur', cur_freq,'wave',wave_freq)
+    return intensity
+
+
+def intensity2sign(intensity):
+    if intensity < 0.67:
+        return 'p'
+    elif intensity < 0.77:
+        return 'mp'
+    elif intensity < 0.89:
+        return 'mf'
+    else:
+        return 'f'
+        
+
+def picknotes(cur_key,cur_freq,notes,notes_list):
+    j = 0
+    while j < len(cur_key):
+        if cur_key[j] != 0:
+            if cur_key[j] > 88:
+                pitch = cur_key[j] - 12
+            else:
+                pitch = cur_key[j]
+            start = j
+            while cur_key[j] != 0 and j < len(cur_key)-1:
+                j += 1
+            intensity = get_intensity(cur_key[j-1],cur_freq,notes_list,j)
+            intensity_sign = intensity2sign(intensity)
+            notes.append(Note(pitch, start, j - 1, intensity_sign,intensity))
+        j += 1
+    return notes
+
+
+def remove_repetitive(notes,note_num):
+    note_set = [0]*note_num
+    i = 0
+    while i < len(notes):
+        note = notes[i]
+        if note_set[note.pitch-1] == 0:
+            note_set[note.pitch-1] = [(note.start,note.end)]
+        else:
+            if (note.start,note.end) in note_set[note.pitch-1]:
+                del notes[i]
+                i -= 1
+            else:
+                note_set[note.pitch-1].append((note.start,note.end))
+        i += 1
+    return notes
+
+
+def multichannel(notes,note_num):    
+    channel = [0]*note_num
+    start_time = [-1]*note_num
+    for note in notes:
+        if channel[note.pitch-1]==0:
+            start_time[note.pitch-1]=note.start
+            note.channel=channel[note.pitch-1]
+            channel[note.pitch-1] += 1
+        else:
+            if note.start - start_time[note.pitch-1] < 10:
+                note.channel=channel[note.pitch-1]
+                channel[note.pitch-1] += 1
+            else:
+                channel[note.pitch-1] = 0
+                start_time[note.pitch-1]=note.start
+                note.channel=channel[note.pitch-1]
+                channel[note.pitch-1] += 1
+    return notes
 
 
 ## visualization tool
@@ -61,6 +151,7 @@ def plot_notes(note_list):
         time.append(note.start)
         pitch.append(note.pitch)
     plt.scatter(time,pitch,s=1)
+
 
 def print_list(l):
     for item in l:
