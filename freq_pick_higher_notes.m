@@ -111,7 +111,7 @@ save_key = input("save key? ('1' = yes)");
 if save_key == 1
     name1 = input("doc name? (if deafult: 1)");
     if name1 == 1
-        name1 = fname + "_key";
+        name1 = fname + "_key2";
     end
     str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + ".mat";
     save(str,"key");
@@ -121,7 +121,7 @@ save_int = input("save intensity? ('1' = yes)");
 if save_int == 1
     name2 = input("doc name? (if deafult: 1)");
     if name2 == 1
-        name2 = fname + "_int";
+        name2 = fname + "_int2";
     end
     str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + ".mat";
     save(str2,"filtered_int_db");
