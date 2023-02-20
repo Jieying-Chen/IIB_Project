@@ -16,12 +16,13 @@ for i = 1:length(filtered_freq(1,:))
             [c cur_key] = min(abs(notes-ori_freq(j)));
             [cur_f cur_int] = key2freq(cur_key,notes,ori_freq(j));
             if cur_f ~= 0
-                buffer = buffer + cur_int * sinewave(cur_f,subwin);
+                buffer = buffer + 1 * sinewave(cur_f,subwin);
             end
         end
     end
     signal((i-1)*length(buffer)+1:i*length(buffer)) = buffer;
 end
 
-plot(signal)
+%plot(signal)
+spectrogram(signal,win,overlap,DFT_points,Fs,'yaxis');
 sound(signal,Fs)
