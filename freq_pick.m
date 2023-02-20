@@ -2,7 +2,7 @@ VoicePath = "C:\Users\96326\Desktop\IIBproject\VoiceSource\";
 %filename = "JLspeech1.mp3";
 %filename = "jc.m4a";
 %filename = "jw.m4a";
-filename = "31Jan_jh2.m4a";
+filename = "31Jan_jc.m4a";
 [audio, Fs] = audioread(VoicePath+filename);
 audio = audio(:,1);
 %audio = audio(190000:end);
@@ -54,7 +54,7 @@ intensity = abs(s_cropped).^2;
 
 %%%%%%
 %thres = 10;
-thres = 50;
+thres = 10;
 %%%%%%
 
 filtered_intensity = (intensity > thres); %intensity .* (intensity > 20) to preserve the intensity
