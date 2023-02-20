@@ -7,7 +7,7 @@ filename = "31Jan_jc.m4a";
 audio = audio(:,1);
 %audio = audio(190000:end);
 
-audio = noise_cancellation(audio,Fs);
+%audio = noise_cancellation(audio,Fs);
 
 duration = length(audio)/Fs;
 
