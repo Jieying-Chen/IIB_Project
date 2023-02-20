@@ -6,7 +6,7 @@ from pprint import pprint
 
 
 class Note:
-    def __init__(self, pitch, start, end, intensity_sign, intensity, channel = -1):
+    def __init__(self, pitch, start, end, intensity, intensity_sign = ' ', channel = -1):
         self.pitch = pitch
         self.start = start
         self.end = end
@@ -65,7 +65,7 @@ def separate_majors(notes):
     return [C_notes, Gb_notes]  
 
 
-def get_intensity(cur_key,cur_freq,notes_list,j):
+def get_intensity(cur_key, cur_freq, notes_list):
     wave_freq = notes_list[cur_key-1]
     if cur_key == 1:
         sigma = notes_list[1]-notes_list[0]
@@ -78,6 +78,7 @@ def get_intensity(cur_key,cur_freq,notes_list,j):
 
 
 def intensity2sign(intensity):
+    #changed
     if intensity < 0.67:
         return 'p'
     elif intensity < 0.77:
@@ -88,7 +89,8 @@ def intensity2sign(intensity):
         return 'f'
         
 
-def picknotes(cur_key,cur_freq,notes,notes_list):
+def picknotes(cur_key, cur_freq, notes, notes_list):
+    #changed
     j = 0
     while j < len(cur_key):
         if cur_key[j] != 0:
@@ -99,14 +101,15 @@ def picknotes(cur_key,cur_freq,notes,notes_list):
             start = j
             while cur_key[j] != 0 and j < len(cur_key)-1:
                 j += 1
-            intensity = get_intensity(cur_key[j-1],cur_freq,notes_list,j)
+            intensity = get_intensity(cur_key[j-1],cur_freq,notes_list)
             intensity_sign = intensity2sign(intensity)
-            notes.append(Note(pitch, start, j - 1, intensity_sign,intensity))
+            notes.append(Note(pitch, start, j - 1, intensity, intensity_sign))
         j += 1
     return notes
 
 
 def remove_repetitive(notes,note_num):
+    #changed
     note_set = [0]*note_num
     i = 0
     while i < len(notes):
@@ -133,8 +136,15 @@ def multichannel(notes,note_num):
             channel[note.pitch-1] += 1
         else:
             if note.start - start_time[note.pitch-1] < 10:
-                note.channel=channel[note.pitch-1]
-                channel[note.pitch-1] += 1
+                if channel[note.pitch-1] == 16:
+                    ##WARNING: BURTAL FIX!!!
+                    channel[note.pitch-1] = 0
+                    start_time[note.pitch-1]=note.start
+                    note.channel=channel[note.pitch-1]
+                    channel[note.pitch-1] += 1
+                else:
+                    note.channel=channel[note.pitch-1]
+                    channel[note.pitch-1] += 1
             else:
                 channel[note.pitch-1] = 0
                 start_time[note.pitch-1]=note.start
