@@ -6,16 +6,17 @@ from pprint import pprint
 
 
 class Note:
-    def __init__(self, pitch, start, end, intensity, intensity_sign = ' ', channel = -1):
+    def __init__(self, pitch, start, end, intensity, intensity_sign = ' ', major = 'None', channel = -1):
         self.pitch = pitch
         self.start = start
         self.end = end
         self.intensity_sign = intensity_sign
         self.intensity = intensity
+        self.major = major
         self.channel = channel
 
     def __repr__(self):
-        return f"pitch = {self.pitch}(time = {self.start}-{self.end}), intensity sign = {self.intensity_sign}, intensity = {self.intensity:.3f}, channel = {self.channel}"
+        return f"pitch = {self.pitch}(time = {self.start}-{self.end}), intensity sign = {self.intensity_sign}, intensity = {self.intensity:.3f}, major = {self.major}, channel = {self.channel}"
 
     def sign(self):
         if self.intensity_sign == 'p':
@@ -31,11 +32,11 @@ class Note:
 
 #Separate notes into C major and Gb major
 def separate_majors(notes):
-    C_major = [1,3,4,6,8,9,11]
-    Gb_major = [0,2,3,5,7,9,10]
+    major1 = [1,3,4,6,8,9,11]
+    major2 = [0,2,3,5,7,9,10]
 
-    C_notes = []
-    Gb_notes = []
+    # C_notes = []
+    # Gb_notes = []
 
     len_all = len(notes)
 
@@ -43,11 +44,15 @@ def separate_majors(notes):
     while i < len(notes):
         note = notes[i]
         seq = note.pitch % 12
-        if (seq in C_major) and (seq not in Gb_major):
-            C_notes.append(notes.pop(i))
+        if (seq in major1) and (seq not in major2):
+            note.major = 1
+            notes.remove(note)
+            #C_notes.append(notes.pop(i))
             i -= 1
-        elif (seq in Gb_major) and (seq not in C_major):
-            Gb_notes.append(notes.pop(i))
+        elif (seq in major1) and (seq not in major2):
+            note.major = 2
+            notes.remove(note)
+            #Gb_notes.append(notes.pop(i))
             i -= 1
         i += 1
 
@@ -56,13 +61,15 @@ def separate_majors(notes):
     while j > 0:
         #print(notes[0].pitch % 12)
         if j % 2 == 0:
-            C_notes.append(notes.pop(0))
+            note.major = 1
+            notes.remove(note)
+            #C_notes.append(notes.pop(0))
         else:
-            Gb_notes.append(notes.pop(0))
+            note.major = 2
+            notes.remove(note)
+            #Gb_notes.append(notes.pop(0))
         j -= 1
-    if len_all!= len(C_notes) + len(Gb_notes):
-        print('False')
-    return [C_notes, Gb_notes]  
+    return 
 
 
 def get_intensity(cur_key, cur_freq, notes_list):
