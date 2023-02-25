@@ -19,14 +19,24 @@ class Note:
         return f"pitch = {self.pitch}(time = {self.start}-{self.end}), intensity sign = {self.intensity_sign}, intensity = {self.intensity:.3f}, major = {self.major}, channel = {self.channel}"
 
     def sign(self):
-        if self.intensity_sign == 'p':
+        if self.intensity_sign == 'ppp':
             return 1
-        elif self.intensity_sign == 'mp':
+        elif self.intensity_sign == 'pp':
             return 2
-        elif self.intensity_sign == 'mf':
+        elif self.intensity_sign == 'p':
             return 3
-        elif self.intensity_sign == 'f':
+        elif self.intensity_sign == 'mp':
             return 4
+        elif self.intensity_sign == 'mf':
+            return 5
+        elif self.intensity_sign == 'f':
+            return 6
+        elif self.intensity_sign == 'ff':
+            return 7
+        elif self.intensity_sign == 'fff':
+            return 8
+        return False
+            
 
     
 
@@ -68,6 +78,7 @@ def get_intensity(cur_key, cur_freq, notes_list):
 
 def intensity2sign(intensity):
     thresholds = [35,55,75]
+    # threshold0 = [0.67,0.77,0.89]
     if intensity < thresholds[0]:
         return 'p'
     elif intensity < thresholds[1]:
@@ -93,9 +104,9 @@ def picknotes(cur_key, cur_freq, cur_int, notes, notes_list):
         while cur_key[j] != 0 and j < len(cur_key)-1:
             j += 1
             ori_int = max(ori_int,cur_int[j])
-        
         intensity = get_intensity(cur_key[j-1],cur_freq,notes_list) * ori_int
         intensity_sign = intensity2sign(intensity)
+        
         notes.append(Note(pitch, start, j - 1, intensity, intensity_sign))
         j += 1
     return notes

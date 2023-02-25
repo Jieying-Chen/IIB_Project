@@ -21,7 +21,6 @@ filename = fname + ftype;
 [audio, Fs] = audioread(VoicePath+filename);
 audio = audio(:,1);
 
-%audio = noise_cancellation(audio,Fs);
 
 duration = length(audio)/Fs;
 
@@ -44,7 +43,8 @@ DFT_points = 20000;
 disp(['frequency resolution = ' num2str(Fs/DFT_points)]);
 freq_bin = Fs / DFT_points;%size of each frequency bin
 
-notes = 440 * 2.^(((1:100)-49)./12); %key = round(49+12*log2(freq/440))
+octave_down = input("how many octaves down?");
+notes = 440 * 2.^(((1:88+octave_down * 12)-49)./12); %key = round(49+12*log2(freq/440))
 
 %%%%%%
 quarter = 0;
@@ -58,15 +58,14 @@ elseif quarter == 2
     eighth = [434 * 2.^(((44:88)-49)./12) 428 * 2.^(((44:88)-49)./12) 422 * 2.^(((44:88)-49)./12)] ;
     notes = sort([notes eighth]);
 end
-lower_freq = (440 * 2.^((1-49)./12) + 440 * 2.^((0-49)./12))/2;
-%upper_freq = (440 * 2.^((89-49)./12) + 440 * 2.^((88-49)./12))/2; %freq of the 89th key
-upper_freq = (440 * 2.^((101-49)./12) + 440 * 2.^((100-49)./12))/2; %freq of the (89+12)th key
+lower_freq = 440 * 2.^((0.5-49)./12);
+upper_freq = 440 * 2.^((88.5 + 12 * octave_down -49)./12); 
 
 [s,f,t] = spectrogram(audio,win,overlap,DFT_points,Fs,'yaxis');
 
 
-s_cropped = s(ceil(lower_freq/freq_bin)+1:floor(upper_freq/freq_bin),:);
-f_cropped = f(ceil(lower_freq/freq_bin)+1:floor(upper_freq/freq_bin));
+s_cropped = s(f > lower_freq & f < upper_freq,:);
+f_cropped = f(f > lower_freq & f < upper_freq);
 intensity = abs(s_cropped).^2;
 
 %%%%%%
@@ -111,7 +110,7 @@ save_key = input("save key? ('1' = yes)");
 if save_key == 1
     name1 = input("doc name? (if deafult: 1)");
     if name1 == 1
-        name1 = fname + "_key2";
+        name1 = fname + "_key_" + int2str(octave_down) + "octave";
     end
     str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + ".mat";
     save(str,"key");
@@ -121,7 +120,7 @@ save_int = input("save intensity? ('1' = yes)");
 if save_int == 1
     name2 = input("doc name? (if deafult: 1)");
     if name2 == 1
-        name2 = fname + "_int2";
+        name2 = fname + "_int_" + int2str(octave_down) + "octave";
     end
     str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + ".mat";
     save(str2,"filtered_int_db");
