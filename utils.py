@@ -95,19 +95,25 @@ def picknotes(cur_key, cur_freq, cur_int, notes, notes_list):
         if cur_key[j] == 0:
             j += 1
             continue
-        if cur_key[j] > 88:
-            pitch = cur_key[j] - 12
-        else:
-            pitch = cur_key[j]
+
+        pitch = cur_key[j]
+        while pitch > 88:
+            pitch -= 12
+        
         start = j
         ori_int = cur_int[j]
         while cur_key[j] != 0 and j < len(cur_key)-1:
             j += 1
             ori_int = max(ori_int,cur_int[j])
+        end = j - 1
+
+        if end - start < 2: 
+            end = start + 2 #all to 75ms
+        
         intensity = get_intensity(cur_key[j-1],cur_freq,notes_list) * ori_int
         intensity_sign = intensity2sign(intensity)
         
-        notes.append(Note(pitch, start, j - 1, intensity, intensity_sign))
+        notes.append(Note(pitch, start, end, intensity, intensity_sign))
         j += 1
     return notes
 
