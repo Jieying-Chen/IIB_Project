@@ -76,10 +76,12 @@ intensity_filter = (intensity > thres); %intensity .* (intensity > 20) to preser
 filtered_freq = intensity_filter.*f_cropped;
 
 filtered_int = intensity_filter.*intensity;
-filtered_int_db = 10*log(filtered_int);
+filtered_int_nm = filtered_int / max(max(filtered_int));
+
+filtered_int_db = 10*log10(filtered_int);
 filtered_int_db(filtered_int_db < 0)=0;
-int_max = max(max(filtered_int_db));
-filtered_int_db = 100 * filtered_int_db / int_max;
+filtered_int_db = filtered_int_db / max(max(filtered_int_db));
+
 
 
 
@@ -108,9 +110,11 @@ key(key < 0)=0;
 %win = hamming(win_length);
 save_key = input("save key? ('1' = yes)");
 if save_key == 1
-    name1 = input("doc name? (if deafult: 1)");
+    name1 = input("Default doc name? (if deafult: 1)");
     if name1 == 1
         name1 = fname + "_key_" + int2str(octave_down) + "octave";
+    else
+        name1 = input("doc name?");
     end
     str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + ".mat";
     save(str,"key");
@@ -118,9 +122,11 @@ end
 
 save_int = input("save intensity? ('1' = yes)");
 if save_int == 1
-    name2 = input("doc name? (if deafult: 1)");
+    name2 = input("Default doc name? (if deafult: 1)");
     if name2 == 1
         name2 = fname + "_int_" + int2str(octave_down) + "octave";
+    else
+        name2 = input("doc name?");
     end
     str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + ".mat";
     save(str2,"filtered_int_db");
