@@ -191,6 +191,8 @@ def plot_notes(note_list):
         pitch.append(note.pitch)
     plt.scatter(time,pitch,s=1)
 
+def empty_list(l):
+    return all([x == [] for x in l])
 
 def print_list(l):
     for item in l:
