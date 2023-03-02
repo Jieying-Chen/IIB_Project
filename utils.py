@@ -36,8 +36,35 @@ class Note:
         elif self.intensity_sign == 'fff':
             return 8
         return False
-            
+    
+def sign2vel(sign):
+    #velocity ==> loudness
+    #dynamic sign to velocity
+    if sign == 'ppp':
+        return 16
+    elif sign == 'pp':
+        return 32
+    elif sign == 'p':
+        return 48
+    elif sign == 'mp':
+        return 64
+    elif sign == 'mf':
+        return 80
+    elif sign == 'f':
+        return 96
+    elif sign == 'ff':
+        return 112
+    elif sign == 'fff':
+        return 127
+    return False
 
+            
+def scale_int(intensity_map):
+    #scale the intensity map(0-1) to maximum=scale
+    scale = 36
+    l = np.array(intensity_map)
+    l = l * scale / np.amax(l)
+    return l.tolist()
     
 
 #Separate notes into C major and Gb major
@@ -75,19 +102,32 @@ def get_intensity(cur_key, cur_freq, notes_list):
     intensity = np.exp(-0.5 *((cur_freq-wave_freq)/sigma)**2)
     return intensity
 
-
 def intensity2sign(intensity):
-    thresholds = [35,55,75]
-    # threshold0 = [0.67,0.77,0.89]
-    if intensity < thresholds[0]:
+    #quantize the intensity -> to dynamic sign
+    int_nm = round(intensity/16)*16
+    if int_nm <=16:
+        return 'ppp'
+    elif int_nm ==32:
+        return 'pp'
+    elif int_nm ==48:
         return 'p'
-    elif intensity < thresholds[1]:
+    elif int_nm ==64:
         return 'mp'
-    elif intensity < thresholds[2]:
+    elif int_nm ==80:
         return 'mf'
-    else:
+    elif int_nm ==96:
         return 'f'
-        
+    elif int_nm ==112:
+        return 'ff'
+    elif int_nm >=127:
+        return 'fff'
+
+
+def int2vel(intensity):
+    #intensity(in dB) to loudness, lowest loudness is (0dB) 16  
+    base = 16
+    return 10**(intensity/40) * base
+
 
 def picknotes(cur_key, cur_freq, cur_int, notes, notes_list):
     j = 0
@@ -95,7 +135,6 @@ def picknotes(cur_key, cur_freq, cur_int, notes, notes_list):
         if cur_key[j] == 0:
             j += 1
             continue
-
         pitch = cur_key[j]
         while pitch > 88:
             pitch -= 12
@@ -106,13 +145,14 @@ def picknotes(cur_key, cur_freq, cur_int, notes, notes_list):
             j += 1
             ori_int = max(ori_int,cur_int[j])
         end = j - 1
-
-        if end - start < 2: 
-            end = start + 2 #all to 75ms
-        
+        # if end - start < 2: 
+        #     end = start + 2 #all to 100ms
+     
         intensity = get_intensity(cur_key[j-1],cur_freq,notes_list) * ori_int
+        #intensity = ori_int
+        intensity = int2vel(intensity)
+        #intensity = get_intensity(cur_key[j-1],cur_freq,notes_list) * 100
         intensity_sign = intensity2sign(intensity)
-        
         notes.append(Note(pitch, start, end, intensity, intensity_sign))
         j += 1
     return notes
@@ -191,8 +231,10 @@ def plot_notes(note_list):
         pitch.append(note.pitch)
     plt.scatter(time,pitch,s=1)
 
+
 def empty_list(l):
     return all([x == [] for x in l])
+
 
 def print_list(l):
     for item in l:
