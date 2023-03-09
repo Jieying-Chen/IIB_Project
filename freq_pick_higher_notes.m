@@ -70,6 +70,7 @@ intensity = abs(s_cropped).^2;
 
 %%%%%%
 thres = 10;
+thres_highfreq = 50;
 %%%%%%
 
 intensity_filter = (intensity > thres); %intensity .* (intensity > 20) to preserve the intensity
@@ -116,7 +117,7 @@ if save_key == 1
     else
         name1 = input("doc name?");
     end
-    str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + ".mat";
+    str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + int2str(thres) + ".mat";
     save(str,"key");
 end
 
@@ -128,7 +129,7 @@ if save_int == 1
     else
         name2 = input("doc name?");
     end
-    str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + ".mat";
+    str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + int2str(thres) + ".mat";
     save(str2,"filtered_int_db");
 end
 
