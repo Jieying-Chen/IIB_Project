@@ -68,12 +68,12 @@ s_cropped = s(f > lower_freq & f < upper_freq,:);
 f_cropped = f(f > lower_freq & f < upper_freq);
 intensity = abs(s_cropped).^2;
 
-f_thres = 1000; %
+f_thres = 1000; 
 f_cropped1 = (f_cropped > f_thres);
 f_cropped2 = (f_cropped <= f_thres);
 
 %%%%%%
-thres1 = 20;
+thres1 = 25;
 thres2 = 10;
 %%%%%%
 
@@ -129,7 +129,7 @@ if save_key == 1
     else
         name1 = input("doc name?");
     end
-    str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + "var2.mat";
+    str = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name1 + "var3.mat";
     save(str,"key");
 end
 
@@ -141,7 +141,7 @@ if save_int == 1
     else
         name2 = input("doc name?");
     end
-    str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + "var2.mat";
+    str2 = "C:\Users\96326\Desktop\IIBproject\IIB_Project\MATLAB_data\" + name2 + "var3.mat";
     save(str2,"filtered_int_db");
 end
 
