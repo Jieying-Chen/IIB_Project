@@ -1,4 +1,4 @@
-# IIB project: Resynthesis of complex audio waveforms using pianos
+# IIB project: Resynthesis of human speech using pianos
 
 This is the repository of the Engineering part IIB project 'Resynthesis of complex audio waveforms using pianos'. </br>
 
